@@ -1,6 +1,8 @@
 # SysScope AI
 
 一个基于LLM的自动化系统测试报告生成工具，能够智能分析系统状态并生成详细的测试报告。
+<img width="1084" alt="image" src="https://github.com/user-attachments/assets/19739abc-6de9-4a69-8a4b-cbb648f0eadf" />
+
 
 ## 🚀 快速部署
 

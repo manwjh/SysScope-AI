@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LLM Computer Report 系统测试脚本
+SysScope AI 系统测试脚本
 用于验证系统各个组件是否正常工作
 """
 

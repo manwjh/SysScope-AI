@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# LLM Computer Report 安装脚本
+# SysScope AI 安装脚本
 
-echo "🔧 开始安装 LLM Computer Report..."
+echo "🔧 开始安装 SysScope AI..."
 
 # 检查Python环境
 if ! command -v python3 &> /dev/null; then
@@ -35,18 +35,24 @@ source venv/bin/activate
 
 # 升级pip
 echo "⬆️  升级pip..."
-pip install --upgrade pip
+pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple/
 
-# 安装依赖
-echo "📦 安装Python依赖..."
-pip install -r requirements.txt
+# 安装依赖（使用国内镜像源）
+echo "📦 安装Python依赖（使用清华镜像源加速）..."
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
 
 cd ..
 
-# 安装前端依赖
-echo "📦 安装前端依赖..."
+# 安装前端依赖（使用国内镜像源）
+echo "📦 安装前端依赖（使用淘宝镜像源加速）..."
 cd frontend
+
+# 设置npm镜像源
+npm config set registry https://registry.npmmirror.com
+
+# 安装依赖
 npm install
+
 cd ..
 
 # 检查环境变量文件

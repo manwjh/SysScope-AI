@@ -1,14 +1,14 @@
-# LLM Computer Report 项目总结 / Project Summary
+# SysScope AI 项目总结 / Project Summary
 
 **版本 / Version**: v0.0.1 - 系统初始构建 / System Initial Build  
-**完成时间 / Completion Time**: 2024年12月 / December 2024  
+**完成时间 / Completion Time**: 2025年6月 / June 2025  
 **项目状态 / Project Status**: 初始版本完成 / Initial Version Completed
 
 ## 项目概述 / Project Overview
 
-LLM Computer Report 是一个基于大语言模型的自动化系统测试报告生成工具。该项目利用LLM的智能分析能力，自动检测系统信息，生成测试计划，执行测试，并生成详细的测试报告。
+SysScope AI 是一个基于大语言模型的自动化系统测试报告生成工具。该项目利用LLM的智能分析能力，自动检测系统信息，生成测试计划，执行测试，并生成详细的测试报告。
 
-LLM Computer Report is an automated system test report generation tool based on large language models. This project leverages LLM's intelligent analysis capabilities to automatically detect system information, generate test plans, execute tests, and produce detailed test reports.
+SysScope AI is an automated system test report generation tool based on large language models. This project leverages LLM's intelligent analysis capabilities to automatically detect system information, generate test plans, execute tests, and produce detailed test reports.
 
 ## 核心功能 / Core Features
 
@@ -60,7 +60,7 @@ LLM Computer Report is an automated system test report generation tool based on 
 ## 项目结构 / Project Structure
 
 ```
-LLM_Computer_Report/
+SysScope-AI/
 ├── backend/                 # 后端服务 / Backend Service
 │   ├── app.py              # FastAPI主应用 / FastAPI Main App
 │   ├── requirements.txt    # Python依赖 / Python Dependencies
@@ -152,9 +152,9 @@ LLM_Computer_Report/
 
 ## 总结 / Summary
 
-LLM Computer Report v0.0.1 成功实现了基于LLM的自动化系统测试报告生成功能。项目采用现代化的技术栈，具有良好的架构设计和安全措施。虽然当前版本存在一些限制，但为后续功能扩展奠定了坚实的基础。
+SysScope AI v0.0.1 成功实现了基于LLM的自动化系统测试报告生成功能。项目采用现代化的技术栈，具有良好的架构设计和安全措施。虽然当前版本存在一些限制，但为后续功能扩展奠定了坚实的基础。
 
-LLM Computer Report v0.0.1 successfully implemented LLM-based automated system test report generation functionality. The project adopts modern technology stack with good architectural design and security measures. Although the current version has some limitations, it lays a solid foundation for future feature expansion.
+SysScope AI v0.0.1 successfully implemented LLM-based automated system test report generation functionality. The project adopts modern technology stack with good architectural design and security measures. Although the current version has some limitations, it lays a solid foundation for future feature expansion.
 
 通过这个项目，我们验证了LLM在系统测试领域的应用潜力，为自动化测试工具的发展提供了新的思路。
 

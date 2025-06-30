@@ -1,7 +1,7 @@
 {
-  "name": "llm-computer-report-frontend",
+  "name": "sysscope-ai-frontend",
   "version": "0.0.1",
-  "description": "LLM Computer Report Frontend - 基于LLM的自动化系统测试报告生成工具前端",
+  "description": "SysScope AI Frontend - 基于LLM的自动化系统测试报告生成工具前端",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",

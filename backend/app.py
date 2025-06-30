@@ -16,7 +16,7 @@ from models.schemas import TestPlan, TestResult, SystemInfo
 load_dotenv("../config.env")
 
 app = FastAPI(
-    title="LLM Computer Report API",
+    title="SysScope AI API",
     description="基于LLM的自动化系统测试报告生成API / LLM-based Automated System Test Report Generation API",
     version="0.0.1"
 )
@@ -38,7 +38,7 @@ report_generator = ReportGenerator()
 
 @app.get("/")
 async def root():
-    return {"message": "LLM Computer Report API", "version": "1.0.0"}
+    return {"message": "SysScope AI API", "version": "1.0.0"}
 
 @app.get("/api/system/info")
 async def get_system_info():

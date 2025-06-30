@@ -1,4 +1,4 @@
-# LLM Computer Report 用户指南 / User Guide
+# SysScope AI 用户指南 / User Guide
 
 **版本 / Version**: v0.0.1 - 系统初始构建 / System Initial Build  
 **更新时间 / Updated**: 2024年12月 / December 2024

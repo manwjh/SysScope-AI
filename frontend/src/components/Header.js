@@ -51,7 +51,7 @@ const Header = () => {
       padding: '0 24px'
     }}>
       <Title level={3} style={{ margin: 0, marginRight: 48, color: '#1890ff' }}>
-        LLM Computer Report
+        SysScope AI
       </Title>
       <Menu
         mode="horizontal"

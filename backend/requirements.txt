@@ -1,4 +1,4 @@
-# LLM Computer Report Backend v0.0.1
+# SysScope AI Backend v0.0.1
 # 基于LLM的自动化系统测试报告生成工具后端依赖
 # LLM-based Automated System Test Report Generation Backend Dependencies
 

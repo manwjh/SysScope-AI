@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# LLM Computer Report 启动脚本
+# SysScope AI 启动脚本
 
-echo "🚀 启动 LLM Computer Report 系统..."
+echo "🚀 启动 SysScope AI 系统..."
 
 # 检查Python环境
 if ! command -v python3 &> /dev/null; then
@@ -67,7 +67,7 @@ npm start &
 FRONTEND_PID=$!
 cd ..
 
-echo "🎉 LLM Computer Report 启动完成！"
+echo "🎉 SysScope AI 启动完成！"
 echo ""
 echo "📱 前端地址: http://localhost:3000"
 echo "🔧 后端地址: http://localhost:8000"

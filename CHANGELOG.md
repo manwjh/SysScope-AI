@@ -4,6 +4,47 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.2] - 2025-06-30
+
+### 修复 / Fixed
+- 🐛 **前端语法错误修复** / Frontend Syntax Error Fixes
+  - 修复TestPlan.js中的字符串引号问题 / Fixed string quote issues in TestPlan.js
+  - 修复Settings.js中缺少Space组件导入 / Fixed missing Space component import in Settings.js
+  - 移除未使用的导入和变量 / Removed unused imports and variables
+  - 解决所有ESLint警告 / Resolved all ESLint warnings
+
+- 🔧 **依赖环境问题解决** / Dependency Environment Issues Resolution
+  - 更新requirements.txt兼容Python 3.13 / Updated requirements.txt for Python 3.13 compatibility
+  - 使用国内镜像源解决网络下载问题 / Used domestic mirror sources to resolve network download issues
+  - 修复虚拟环境创建和依赖安装 / Fixed virtual environment creation and dependency installation
+
+- 🚀 **启动脚本优化** / Startup Script Optimization
+  - 自动检测和释放端口占用 / Automatic port detection and release
+  - 创建便捷的安装和启动脚本 / Created convenient installation and startup scripts
+  - 改进错误处理和用户提示 / Improved error handling and user prompts
+
+### 新增 / Added
+- 📦 **自动化脚本** / Automation Scripts
+  - `install_deps.sh`: 一键安装所有依赖 / One-click installation of all dependencies
+  - `start.sh`: 统一的启动脚本 / Unified startup script (合并了开发和生产环境功能)
+  - 端口自动释放功能 / Automatic port release functionality
+
+- 📚 **文档更新** / Documentation Updates
+  - 更新README.md添加快速开始指南 / Updated README.md with quick start guide
+  - 添加故障排除说明 / Added troubleshooting instructions
+  - 完善安装和部署文档 / Improved installation and deployment documentation
+
+### 改进 / Improved
+- ⚡ **性能优化** / Performance Optimization
+  - 优化依赖安装速度 / Optimized dependency installation speed
+  - 改进启动流程 / Improved startup process
+  - 减少不必要的文件操作 / Reduced unnecessary file operations
+
+- 🛠️ **开发体验** / Development Experience
+  - 简化开发环境设置 / Simplified development environment setup
+  - 提供更清晰的错误信息 / Provided clearer error messages
+  - 优化代码结构和可读性 / Optimized code structure and readability
+
 ## [0.0.1] - 2024-12-XX
 
 ### 新增 / Added

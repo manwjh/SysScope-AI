@@ -9,9 +9,11 @@ import {
   Select,
   Divider,
   message,
-  Alert 
+  Alert,
+  Space
 } from 'antd';
 import { SaveOutlined, ReloadOutlined } from '@ant-design/icons';
+import { saveSettings } from '../utils/api';
 
 const { Option } = Select;
 
@@ -22,9 +24,22 @@ const Settings = () => {
   const handleSave = async (values) => {
     try {
       setLoading(true);
-      // 这里可以添加保存配置的逻辑
-      console.log('保存配置:', values);
-      message.success('配置保存成功！');
+      // 映射前端字段为后端config.env格式
+      const payload = {
+        LLM_PROVIDER: values.llm_provider,
+        LLM_MODEL: values.llm_model,
+        LLM_API_KEY: values.llm_api_key,
+        LLM_BASE_URL: values.llm_base_url,
+        LLM_MAX_TOKENS: values.llm_max_tokens,
+        LLM_TEMPERATURE: values.llm_temperature,
+        REPORT_OUTPUT_PATH: values.report_output_path,
+        REPORT_FILENAME_PATTERN: values.report_filename_pattern,
+        REPORT_INCLUDE_SYSTEM_INFO: values.report_include_system_info,
+        REPORT_INCLUDE_RAW_LOGS: values.report_include_raw_logs,
+        REPORT_INCLUDE_ANALYSIS: values.report_include_analysis
+      };
+      await saveSettings(payload);
+      message.success('配置保存成功！请重启后端服务使配置生效。');
     } catch (error) {
       message.error('保存配置失败: ' + error.message);
     } finally {
@@ -71,7 +86,7 @@ const Settings = () => {
           onFinish={handleSave}
           initialValues={{
             llm_provider: 'custom',
-            llm_model: 'doubao-seed-1-6-250615',
+            llm_model: 'doubao-seed-1-6-flash-250615',
             llm_api_key: '',
             llm_base_url: 'https://ark.cn-beijing.volces.com/api/v3',
             llm_max_tokens: 4000,
@@ -102,7 +117,7 @@ const Settings = () => {
             label="模型名称"
             rules={[{ required: true, message: '请输入模型名称' }]}
           >
-            <Input placeholder="例如: doubao-seed-1-6-250615" />
+            <Input placeholder="例如: doubao-seed-1-6-flash-250615" />
           </Form.Item>
 
           <Form.Item

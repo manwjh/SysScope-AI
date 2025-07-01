@@ -12,7 +12,7 @@ services:
       - ./.env:/app/.env
     environment:
       - LLM_PROVIDER=custom
-      - LLM_MODEL=doubao-seed-1-6-250615
+      - LLM_MODEL=doubao-seed-1-6-flash-250615
       - LLM_API_KEY=41a9d475-45a9-46a2-90bd-bbb75505e9bf
       - LLM_BASE_URL=https://ark.cn-beijing.volces.com/api/v3
     restart: unless-stopped

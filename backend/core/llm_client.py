@@ -12,6 +12,9 @@ class LLMClient:
     def __init__(self, config: Optional[LLMConfig] = None):
         self.config = config or self._load_config()
         self._setup_client()
+        # 添加连接池和超时设置
+        self._session = None
+        self._timeout = aiohttp.ClientTimeout(total=60, connect=10)
     
     def _load_config(self) -> LLMConfig:
         """从环境变量加载配置"""
@@ -20,8 +23,8 @@ class LLMClient:
             raise ValueError("LLM_API_KEY environment variable is required. Please set it in your config.env file.")
         
         return LLMConfig(
-            provider=os.getenv("LLM_PROVIDER", "custom"),
-            model=os.getenv("LLM_MODEL", "doubao-seed-1-6-250615"),
+            provider=os.getenv("LLM_PROVIDER", "火山引擎"),
+            model=os.getenv("LLM_MODEL", "doubao-seed-1-6-flash-250615"),
             api_key=api_key,
             base_url=os.getenv("LLM_BASE_URL", "https://ark.cn-beijing.volces.com/api/v3"),
             max_tokens=int(os.getenv("LLM_MAX_TOKENS", "4000")),
@@ -36,15 +39,26 @@ class LLMClient:
         if not self.config.base_url:
             raise ValueError("LLM base URL is required")
     
+    async def _get_session(self) -> aiohttp.ClientSession:
+        """获取或创建HTTP会话，实现连接池管理"""
+        if self._session is None or self._session.closed:
+            connector = aiohttp.TCPConnector(limit=10, limit_per_host=5)
+            self._session = aiohttp.ClientSession(
+                connector=connector,
+                timeout=self._timeout
+            )
+        return self._session
+    
     async def _call_llm(self, prompt: str) -> str:
         """调用LLM API"""
+        print("[LLM] _call_llm called")
+        print("[LLM] Requesting LLM API at:", self.config.base_url)
         try:
             url = f"{self.config.base_url}/chat/completions"
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self.config.api_key}"
             }
-            
             payload = {
                 "model": self.config.model,
                 "messages": [
@@ -60,31 +74,44 @@ class LLMClient:
                 "max_tokens": self.config.max_tokens,
                 "temperature": self.config.temperature
             }
+            print("[LLM] Request URL:", url)
+            print("[LLM] Request payload:", json.dumps(payload, ensure_ascii=False))
             
-            async with aiohttp.ClientSession() as session:
-                async with session.post(url, headers=headers, json=payload) as response:
-                    if response.status != 200:
-                        error_text = await response.text()
-                        raise Exception(f"API request failed with status {response.status}: {error_text}")
-                    
-                    data = await response.json()
-                    
-                    if 'choices' in data and len(data['choices']) > 0:
-                        return data['choices'][0]['message']['content'].strip()
-                    else:
-                        raise Exception("Invalid response format from API")
-            
+            # 使用连接池管理的会话
+            session = await self._get_session()
+            async with session.post(url, headers=headers, json=payload) as response:
+                print(f"[LLM] Response status: {response.status}")
+                response_text = await response.text()
+                print(f"[LLM] Raw response text: {response_text}")
+                if response.status != 200:
+                    raise Exception(f"API request failed with status {response.status}: {response_text}")
+                data = json.loads(response_text)
+                if 'choices' in data and len(data['choices']) > 0:
+                    result = data['choices'][0]['message']['content'].strip()
+                    print("[LLM] Parsed LLM result:", result)
+                    return result
+                else:
+                    raise Exception("Invalid response format from API")
+        except asyncio.TimeoutError:
+            print("[LLM] Request timeout")
+            raise Exception("LLM API request timeout")
         except Exception as e:
+            print("[LLM] Exception in _call_llm:", str(e))
             raise Exception(f"LLM API call failed: {str(e)}")
     
     async def generate_test_plan(self, system_info: SystemInfo) -> TestPlan:
         """根据系统信息生成测试计划"""
         try:
+            print("[LLM] Building prompt for test plan...")
             prompt = self._build_test_plan_prompt(system_info)
+            print("[LLM] Prompt:", prompt)
             response = await self._call_llm(prompt)
+            print("[LLM] LLM response:", response)
             test_plan = self._parse_test_plan_response(response, system_info)
+            print("[LLM] Parsed test plan:", test_plan)
             return test_plan
         except Exception as e:
+            print("[LLM] Exception in generate_test_plan:", str(e))
             raise Exception(f"Failed to generate test plan: {str(e)}")
     
     def _build_test_plan_prompt(self, system_info: SystemInfo) -> str:
@@ -254,3 +281,8 @@ class LLMClient:
 
 请以Markdown格式返回，包含标题、要点和总结。
 """
+    
+    async def close(self):
+        """关闭HTTP会话"""
+        if self._session and not self._session.closed:
+            await self._session.close()

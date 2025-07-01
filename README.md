@@ -2,6 +2,124 @@
 
 一个基于LLM的自动化系统测试报告生成工具，能够智能分析系统状态并生成详细的测试报告。
 
+## 🚀 快速开始
+
+### 开发环境设置
+
+1. **安装依赖**
+```bash
+# 一键安装所有依赖（推荐）
+./install_deps.sh
+
+# 或者手动安装
+# 后端依赖
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+
+# 前端依赖
+cd frontend
+npm install
+```
+
+2. **启动开发环境**
+```bash
+# 一键启动前后端服务
+./start.sh
+
+# 或者分别启动
+# 后端服务
+cd backend
+source venv/bin/activate
+python app.py
+
+# 前端服务（新终端）
+cd frontend
+npm start
+```
+
+3. **访问应用**
+- 前端界面: http://localhost:3000
+- 后端API: http://localhost:8000
+
+## 📦 安装脚本说明
+
+### 脚本功能对比
+
+| 脚本名称 | 主要功能 | 适用场景 | 特点 |
+|---------|---------|---------|------|
+| `install.sh` | 完整系统安装 | 首次安装、生产环境 | 包含环境检查、目录创建、依赖安装、配置设置 |
+| `install_deps.sh` | 依赖安装更新 | 开发环境、依赖更新 | 重新创建虚拟环境，专注依赖管理 |
+| `quick_deploy.sh` | 多方式部署 | 用户友好部署 | 交互式菜单，支持多种部署方式 |
+
+### 详细说明
+
+#### 1. `install.sh` - 完整安装脚本
+**功能：**
+- 环境检查（Python3、Node.js）
+- 创建必要目录（reports、logs）
+- 安装后端依赖（Python虚拟环境）
+- 安装前端依赖（npm包）
+- 配置环境变量文件
+- 使用国内镜像源加速
+
+**使用场景：**
+- 首次安装系统
+- 生产环境部署
+- 需要完整环境配置
+
+**命令：**
+```bash
+./install.sh
+```
+
+#### 2. `install_deps.sh` - 依赖安装脚本
+**功能：**
+- 重新创建Python虚拟环境
+- 安装/更新后端依赖
+- 安装/更新前端依赖
+- 验证依赖安装状态
+
+**使用场景：**
+- 开发环境快速设置
+- 依赖包更新
+- 虚拟环境重置
+
+**命令：**
+```bash
+./install_deps.sh
+```
+
+#### 3. `quick_deploy.sh` - 快速部署脚本
+**功能：**
+- 提供交互式部署菜单
+- 支持多种部署方式选择
+- 集成其他脚本功能
+
+**部署选项：**
+1. **本地安装** - 调用 `install.sh`
+2. **Docker容器部署** - 使用docker-compose
+3. **离线安装包部署** - 解压并安装离线包
+4. **创建离线安装包** - 调用 `create_offline_package.sh`
+
+**使用场景：**
+- 用户友好的部署入口
+- 多种部署方式选择
+- 适合不同技术水平的用户
+
+**命令：**
+```bash
+./quick_deploy.sh
+```
+
+### 选择建议
+
+- **新用户**：使用 `./quick_deploy.sh` 选择适合的部署方式
+- **开发者**：使用 `./install_deps.sh` 快速设置开发环境
+- **运维人员**：使用 `./install.sh` 进行标准化安装
+- **离线环境**：使用 `./quick_deploy.sh` 选择离线安装
+
 ## 🚀 快速部署
 
 ### 方式一：一键部署（推荐）
@@ -108,20 +226,117 @@ SysScope-AI/
 
 ## 配置说明
 
-### LLM配置
-系统已预配置你提供的API：
-```
-LLM_PROVIDER=custom
-LLM_MODEL=doubao-seed-1-6-250615
-LLM_API_KEY=41a9d475-45a9-46a2-90bd-bbb75505e9bf
-LLM_BASE_URL=https://ark.cn-beijing.volces.com/api/v3
+### LLM参数配置流程
+
+#### 1. 参数初始化
+LLM参数在系统中有多个配置源，按优先级排序：
+
+**配置文件优先级：**
+1. `.env` 文件（最高优先级）
+2. `config.env` 文件
+3. `config.env.example` 文件（默认模板）
+
+**配置参数说明：**
+```bash
+# LLM API配置
+LLM_PROVIDER=custom                    # LLM提供商：custom/openai/anthropic
+LLM_MODEL=doubao-seed-1-6-flash-250615 # 模型名称
+LLM_API_KEY=your_api_key_here         # API密钥
+LLM_BASE_URL=https://ark.cn-beijing.volces.com/api/v3  # API基础URL
+LLM_MAX_TOKENS=4000                   # 最大Token数
+LLM_TEMPERATURE=0.7                   # 温度参数
+
+# 报告配置
+REPORT_OUTPUT_PATH=reports            # 报告输出路径
+REPORT_FILENAME_PATTERN=report_{timestamp}_{system_name}  # 文件名模式
+REPORT_INCLUDE_SYSTEM_INFO=true       # 包含系统信息
+REPORT_INCLUDE_RAW_LOGS=false         # 包含原始日志
+REPORT_INCLUDE_ANALYSIS=true          # 包含LLM分析
 ```
 
-### 自定义配置
-如需修改配置，编辑 `.env` 文件：
+#### 2. 前端编辑和保存
+用户可以通过Web界面修改LLM参数：
+
+**访问设置页面：**
+- 在应用界面点击"设置"菜单
+- 或直接访问 `http://localhost:3000/settings`
+
+**可编辑参数：**
+- LLM提供商选择
+- 模型名称
+- API密钥
+- API基础URL
+- 最大Token数
+- 温度参数
+- 报告相关配置
+
+**保存流程：**
+1. 用户在设置页面修改参数
+2. 点击"保存"按钮
+3. 前端调用 `/api/settings/save` API
+4. 后端将配置写入 `config.env` 文件
+5. 提示用户重启后端服务使配置生效
+
+#### 3. 参数传递过程
+
+**后端启动时：**
+```
+1. backend/app.py 启动
+2. 加载环境变量文件（.env > config.env > config.env.example）
+3. 初始化 LLMClient 实例
+4. LLMClient._load_config() 读取环境变量
+5. 创建 LLMConfig 对象存储配置
+```
+
+**API调用时：**
+```
+1. 前端发起"生成测试计划"请求
+2. backend/app.py 路由 /api/test-plan/generate
+3. 调用 llm_client.generate_test_plan()
+4. LLMClient._call_llm() 使用配置的API参数
+5. 发送HTTP请求到LLM服务
+```
+
+**配置更新时：**
+```
+1. 前端设置页面保存配置
+2. POST /api/settings/save
+3. 后端写入 config.env 文件
+4. 提示重启后端服务
+5. 重启后重新加载配置
+```
+
+#### 4. 配置方式对比
+
+| 配置方式 | 优点 | 缺点 | 适用场景 |
+|---------|------|------|----------|
+| 前端设置页面 | 用户友好，可视化 | 需要重启服务 | 开发/测试环境 |
+| 直接编辑 .env | 立即生效，灵活 | 需要手动编辑 | 生产环境 |
+| Docker环境变量 | 容器化部署 | 需要重建镜像 | 容器部署 |
+| 配置文件模板 | 标准化配置 | 需要复制修改 | 新环境部署 |
+
+#### 5. 故障排除
+
+**常见配置问题：**
+1. **API密钥错误**：检查 `LLM_API_KEY` 是否正确
+2. **模型名称错误**：确认 `LLM_MODEL` 在服务商中可用
+3. **URL格式错误**：验证 `LLM_BASE_URL` 格式
+4. **配置未生效**：重启后端服务重新加载配置
+
+**调试方法：**
 ```bash
-cp config.env.example .env
-# 编辑 .env 文件
+# 检查当前配置
+cat .env
+cat config.env
+
+# 查看后端日志
+tail -f logs/backend.log
+
+# 测试API连接
+curl -X POST "https://ark.cn-beijing.volces.com/api/v3/chat/completions" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"doubao-seed-1-6-flash-250615","messages":[{"role":"user","content":"test"}]}'
 ```
 
 ## 性能优化
@@ -138,6 +353,68 @@ cp config.env.example .env
 - 离线安装: 30秒-1分钟
 
 ## 故障排除
+
+### 安装脚本问题
+
+#### `install.sh` 相关问题
+1. **Python3未安装错误**
+   ```bash
+   # 安装Python3
+   brew install python3  # macOS
+   sudo apt install python3  # Ubuntu
+   ```
+
+2. **Node.js未安装错误**
+   ```bash
+   # 安装Node.js
+   brew install node  # macOS
+   curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -  # Ubuntu
+   sudo apt-get install -y nodejs
+   ```
+
+3. **权限问题**
+   ```bash
+   # 给脚本执行权限
+   chmod +x install.sh
+   # 或使用sudo运行
+   sudo ./install.sh
+   ```
+
+#### `install_deps.sh` 相关问题
+1. **虚拟环境创建失败**
+   ```bash
+   # 手动创建虚拟环境
+   cd backend
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+2. **依赖验证失败**
+   ```bash
+   # 检查具体依赖
+   python -c "import fastapi; print('FastAPI OK')"
+   python -c "import uvicorn; print('Uvicorn OK')"
+   python -c "import openai; print('OpenAI OK')"
+   python -c "import psutil; print('Psutil OK')"
+   ```
+
+#### `quick_deploy.sh` 相关问题
+1. **Docker未安装**
+   ```bash
+   # 安装Docker
+   brew install --cask docker  # macOS
+   curl -fsSL https://get.docker.com | sh  # Linux
+   ```
+
+2. **Docker Compose未安装**
+   ```bash
+   # 安装Docker Compose
+   pip install docker-compose
+   # 或使用独立版本
+   sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   sudo chmod +x /usr/local/bin/docker-compose
+   ```
 
 ### 网络问题
 1. 使用离线安装包

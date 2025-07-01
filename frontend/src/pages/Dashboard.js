@@ -16,7 +16,6 @@ import {
   ExperimentOutlined, 
   FileTextOutlined, 
   CheckCircleOutlined,
-  CloseCircleOutlined,
   ClockCircleOutlined 
 } from '@ant-design/icons';
 import { getSystemInfo, generateTestPlan } from '../utils/api';
@@ -45,7 +44,7 @@ const Dashboard = () => {
   const handleGenerateTestPlan = async () => {
     try {
       setGenerating(true);
-      const testPlan = await generateTestPlan();
+      await generateTestPlan();
       message.success('测试计划生成成功！');
     } catch (error) {
       message.error('生成测试计划失败: ' + error.message);

@@ -58,8 +58,14 @@ cd ..
 # 检查环境变量文件
 if [ ! -f ".env" ]; then
     echo "📝 创建环境变量文件..."
-    cp config.env.example .env
-    echo "✅ 环境变量文件已创建，请根据需要修改 .env 文件"
+    # 优先使用 config.env，如果不存在则使用 config.env.example
+    if [ -f "config.env" ]; then
+        cp config.env .env
+        echo "✅ 使用 config.env 创建环境变量文件"
+    else
+        cp config.env.example .env
+        echo "✅ 使用 config.env.example 创建环境变量文件，请根据需要修改 .env 文件"
+    fi
 fi
 
 echo "🎉 安装完成！"

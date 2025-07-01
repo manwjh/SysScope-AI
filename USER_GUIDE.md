@@ -50,7 +50,7 @@
 ### LLM API配置 / LLM API Configuration
 系统已预配置API端点 / System pre-configured API endpoint:
 - 端点 / Endpoint: https://ark.cn-beijing.volces.com/api/v3
-- 模型 / Model: doubao-seed-1-6-250615
+- 模型 / Model: doubao-seed-1-6-flash-250615
 - API密钥 / API Key: 请在config.env文件中配置 / Please configure in config.env file
 
 ### 自定义配置 / Custom Configuration

@@ -6,7 +6,6 @@ import {
   Switch, 
   Space, 
   message, 
-  Modal, 
   Descriptions,
   Tag,
   Progress,
@@ -27,13 +26,21 @@ const TestPlan = () => {
   const [executing, setExecuting] = useState(false);
   const [results, setResults] = useState(null);
 
+  useEffect(() => {
+    console.log('TestPlan component mounted');
+    console.log('Current testPlan state:', testPlan);
+  }, [testPlan]);
+
   const handleGeneratePlan = async () => {
     try {
+      console.log('Starting to generate test plan...');
       setLoading(true);
       const plan = await generateTestPlan();
+      console.log('Generated test plan:', plan);
       setTestPlan(plan);
       message.success('测试计划生成成功！');
     } catch (error) {
+      console.error('Error generating test plan:', error);
       message.error('生成测试计划失败: ' + error.message);
     } finally {
       setLoading(false);
@@ -160,6 +167,8 @@ const TestPlan = () => {
     },
   ];
 
+  console.log('Rendering TestPlan component, testPlan:', testPlan);
+
   return (
     <div>
       <Card title="测试计划管理" extra={
@@ -185,7 +194,7 @@ const TestPlan = () => {
         {!testPlan ? (
           <Alert
             message="暂无测试计划"
-            description="点击"生成测试计划"按钮来创建新的测试计划。"
+            description="点击'生成测试计划'按钮来创建新的测试计划。"
             type="info"
             showIcon
             action={

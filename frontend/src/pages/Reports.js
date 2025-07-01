@@ -13,8 +13,7 @@ import {
 import { 
   FileTextOutlined, 
   DownloadOutlined, 
-  EyeOutlined,
-  DeleteOutlined 
+  EyeOutlined
 } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import { getReports, getReport } from '../utils/api';
@@ -65,10 +64,7 @@ const Reports = () => {
     document.body.removeChild(element);
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('zh-CN');
-  };
+
 
   return (
     <div>

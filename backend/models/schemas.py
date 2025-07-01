@@ -18,6 +18,8 @@ class TestCategory(str, Enum):
     STORAGE = "storage"
     SOFTWARE = "software"
     HARDWARE = "hardware"
+    COMPUTING_POWER = "computing_power"
+    COMPUTING = "computing"
     CUSTOM = "custom"
 
 class SystemInfo(BaseModel):

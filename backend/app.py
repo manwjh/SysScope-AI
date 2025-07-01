@@ -8,12 +8,13 @@ import signal
 import sys
 import asyncio
 from dotenv import load_dotenv
+from typing import List
 
 from core.system_detector import SystemDetector
 from core.test_engine import TestEngine
 from core.llm_client import LLMClient
 from core.report_generator import ReportGenerator
-from models.schemas import TestPlan, TestResult, SystemInfo
+from models.schemas import TestPlan, TestResult, SystemInfo, TestStatus
 
 # 加载环境变量 - 修复路径问题
 env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
@@ -48,6 +49,15 @@ report_generator = ReportGenerator()
 
 # 全局变量用于存储清理任务
 cleanup_tasks = []
+
+# 模拟测试进度和结果（实际应由任务管理器动态生成）
+test_progress_data = [
+    {"name": "系统信息收集", "status": TestStatus.RUNNING, "progress": 40, "result": None},
+    {"name": "INT算力测试", "status": TestStatus.PENDING, "progress": 0, "result": None},
+    {"name": "FP8算力测试", "status": TestStatus.COMPLETED, "progress": 100, "result": "通过"},
+    {"name": "FP16算力测试", "status": TestStatus.FAILED, "progress": 100, "result": "失败"},
+    {"name": "FP32算力测试", "status": TestStatus.PENDING, "progress": 0, "result": None},
+]
 
 def signal_handler(signum, frame):
     """信号处理器，确保优雅关闭"""
@@ -196,6 +206,20 @@ async def save_settings(settings: dict = Body(...)):
         return {"success": True, "message": "配置已保存到config.env，请重启后端服务生效。"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"保存配置失败: {str(e)}")
+
+@app.get("/api/test/progress")
+async def get_test_progress():
+    """获取所有测试项的进度和结果（模拟数据）"""
+    # 注意：实际项目中应返回真实的测试进度和结果
+    return [
+        {
+            "name": item["name"],
+            "status": item["status"].value,
+            "progress": item["progress"],
+            "result": item["result"]
+        }
+        for item in test_progress_data
+    ]
 
 if __name__ == "__main__":
     try:

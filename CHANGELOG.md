@@ -4,6 +4,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3] - 2025-01-XX
+
+### 清理 / Cleanup
+- 🧹 **项目清理** / Project Cleanup
+  - 删除临时文件和缓存 / Removed temporary files and cache
+  - 清理不必要的依赖目录 / Cleaned up unnecessary dependency directories
+  - 删除测试文件和日志文件 / Removed test files and log files
+  - 优化项目结构 / Optimized project structure
+
+### 改进 / Improved
+- 📦 **依赖管理** / Dependency Management
+  - 清理node_modules和venv目录 / Cleaned up node_modules and venv directories
+  - 准备重新安装依赖 / Prepared for dependency reinstallation
+  - 减少项目体积 / Reduced project size
+
 ## [0.0.2] - 2025-06-30
 
 ### 修复 / Fixed

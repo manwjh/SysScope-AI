@@ -9,7 +9,9 @@ import {
   Descriptions, 
   Alert,
   Spin,
-  message 
+  message,
+  Table,
+  Tag
 } from 'antd';
 import { 
   DesktopOutlined, 
@@ -18,16 +20,29 @@ import {
   CheckCircleOutlined,
   ClockCircleOutlined 
 } from '@ant-design/icons';
-import { getSystemInfo, generateTestPlan } from '../utils/api';
+import { getSystemInfo, generateTestPlan, executeTests } from '../utils/api';
+import axios from 'axios';
 
 const Dashboard = () => {
   const [systemInfo, setSystemInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [testPlan, setTestPlan] = useState(null);
+  const [executing, setExecuting] = useState(false);
+  const [showTestProgress, setShowTestProgress] = useState(false);
+  const [testProgress, setTestProgress] = useState([]);
 
   useEffect(() => {
     loadSystemInfo();
-  }, []);
+    // 只有在显示测试进度时才轮询
+    let timer;
+    if (showTestProgress) {
+      timer = setInterval(() => {
+        fetchTestProgress();
+      }, 2000);
+    }
+    return () => timer && clearInterval(timer);
+  }, [showTestProgress]);
 
   const loadSystemInfo = async () => {
     try {
@@ -44,12 +59,54 @@ const Dashboard = () => {
   const handleGenerateTestPlan = async () => {
     try {
       setGenerating(true);
-      await generateTestPlan();
+      const plan = await generateTestPlan();
+      setTestPlan(plan);
       message.success('测试计划生成成功！');
     } catch (error) {
       message.error('生成测试计划失败: ' + error.message);
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const handleExecuteTests = async () => {
+    if (!testPlan) {
+      message.warning('请先生成测试计划');
+      return;
+    }
+    try {
+      setExecuting(true);
+      // 初始化进度栏为本次测试项目，全部pending
+      setTestProgress(
+        testPlan.test_items.map(item => ({
+          name: item.name,
+          status: 'pending',
+          progress: 0,
+          result: null,
+        }))
+      );
+      setShowTestProgress(true);
+      await executeTests(testPlan);
+      message.success('测试已开始执行！');
+    } catch (error) {
+      message.error('执行测试失败: ' + error.message);
+      setShowTestProgress(false);
+    } finally {
+      setExecuting(false);
+    }
+  };
+
+  const fetchTestProgress = async () => {
+    try {
+      const res = await axios.get('/api/test/progress');
+      setTestProgress(res.data);
+      // 如果所有测试都已完成或失败，则自动隐藏进度栏
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        const allDone = res.data.every(item => ['completed', 'failed', 'skipped'].includes(item.status));
+        if (allDone) setShowTestProgress(false);
+      }
+    } catch (e) {
+      // 忽略错误
     }
   };
 
@@ -74,6 +131,27 @@ const Dashboard = () => {
   }
 
   const memoryUsage = ((systemInfo.memory_total - systemInfo.memory_available) / systemInfo.memory_total) * 100;
+
+  const statusMap = {
+    pending: { color: 'default', text: '等待中' },
+    running: { color: 'processing', text: '进行中' },
+    completed: { color: 'success', text: '成功' },
+    failed: { color: 'error', text: '失败' },
+    skipped: { color: 'warning', text: '跳过' },
+  };
+
+  const testColumns = [
+    { title: '测试名称', dataIndex: 'name', key: 'name' },
+    { title: '状态', dataIndex: 'status', key: 'status',
+      render: status => <Tag color={statusMap[status]?.color}>{statusMap[status]?.text || status}</Tag>
+    },
+    { title: '进度', dataIndex: 'progress', key: 'progress',
+      render: progress => <Progress percent={progress} size="small" />
+    },
+    { title: '结果', dataIndex: 'result', key: 'result',
+      render: result => result ? <Tag color="green">{result}</Tag> : '-'
+    },
+  ];
 
   return (
     <div>
@@ -170,15 +248,6 @@ const Dashboard = () => {
               </Col>
               <Col span={6}>
                 <Button 
-                  icon={<CheckCircleOutlined />}
-                  block
-                  onClick={() => window.location.href = '/test-plan'}
-                >
-                  执行测试
-                </Button>
-              </Col>
-              <Col span={6}>
-                <Button 
                   icon={<ClockCircleOutlined />}
                   block
                   onClick={loadSystemInfo}
@@ -186,10 +255,49 @@ const Dashboard = () => {
                   刷新信息
                 </Button>
               </Col>
+              <Col span={6}>
+                <Button 
+                  icon={<ExperimentOutlined />}
+                  block
+                  loading={generating}
+                  onClick={handleGenerateTestPlan}
+                >
+                  生成测试计划
+                </Button>
+              </Col>
+              <Col span={6}>
+                <Button 
+                  type="primary"
+                  icon={<CheckCircleOutlined />}
+                  block
+                  loading={executing}
+                  onClick={handleExecuteTests}
+                  disabled={!testPlan}
+                >
+                  执行测试
+                </Button>
+              </Col>
             </Row>
           </Card>
         </Col>
       </Row>
+
+      {/* 测试进度与结果栏目，仅在 showTestProgress 时显示 */}
+      {showTestProgress && (
+        <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+          <Col span={24}>
+            <Card title="测试进度与结果">
+              <Table
+                columns={testColumns}
+                dataSource={testProgress}
+                rowKey="name"
+                pagination={false}
+                size="small"
+              />
+            </Card>
+          </Col>
+        </Row>
+      )}
     </div>
   );
 };

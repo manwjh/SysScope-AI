@@ -220,11 +220,75 @@ SysScope-AI/
 
 ## 使用说明
 
-1. **系统检测**: 应用会自动检测当前系统信息
-2. **生成测试计划**: 点击"生成测试计划"按钮，LLM会根据系统信息生成测试项目
-3. **选择测试项目**: 在界面上选择要执行的测试项目
-4. **执行测试**: 点击"开始测试"执行选中的测试项目
-5. **查看报告**: 测试完成后可以查看生成的Markdown格式报告
+# SysScope-AI 使用说明
+
+## 快速开始
+
+### 1. 一键安装依赖
+
+```bash
+./install.sh
+```
+
+这个脚本会：
+- 创建Python虚拟环境
+- 安装所有必需的依赖包（包括numpy、torch等）
+- 检查关键依赖是否正确安装
+
+### 2. 启动后端服务
+
+```bash
+./start_backend.sh
+```
+
+或者使用完整启动脚本：
+
+```bash
+./start.sh
+```
+
+## 常见问题解决
+
+### 测试失败问题
+
+如果遇到以下错误：
+- `ModuleNotFoundError: No module named 'numpy'`
+- `ModuleNotFoundError: No module named 'torch'`
+- `ModuleNotFoundError: No module named 'fastapi'`
+
+**解决方案：**
+1. 确保已运行 `./install.sh` 安装所有依赖
+2. 确保后端服务在虚拟环境中运行
+3. 如果问题持续，重新运行安装脚本：
+   ```bash
+   rm -rf backend/venv
+   ./install.sh
+   ```
+
+### 虚拟环境问题
+
+- 如果遇到虚拟环境相关错误，请确保使用 `./start_backend.sh` 启动服务
+- 不要直接在系统Python环境中运行，必须使用虚拟环境
+
+## 依赖说明
+
+项目需要以下关键依赖：
+- **fastapi**: Web框架
+- **numpy**: 数值计算（INT算力测试）
+- **torch**: PyTorch深度学习框架（FP8/FP16/FP32/FP64算力测试）
+- **sysbench**: 系统性能测试工具
+
+## 测试功能
+
+系统支持以下测试类别：
+- 系统信息收集
+- 算力测试（INT、FP8、FP16、FP32、FP64）
+- 性能测试
+- 安全测试
+- 网络测试
+- 存储测试
+- 软件环境测试
+- 硬件检测
 
 ## 配置说明
 

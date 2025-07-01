@@ -4,7 +4,7 @@ import asyncio
 import aiohttp
 from typing import Dict, List, Any, Optional
 from datetime import datetime
-from models.schemas import SystemInfo, TestPlan, TestItem, TestExecutionResult, TestResult, LLMConfig
+from models.schemas import SystemInfo, TestPlan, TestItem, TestExecutionResult, TestResult, LLMConfig, TestCategory
 
 class LLMClient:
     """LLM客户端，用于与自定义API交互"""
@@ -130,13 +130,14 @@ class LLMClient:
 - 用户名: {system_info.username}
 
 请生成一个包含以下类别的测试计划：
-1. 系统信息收集
-2. 性能测试
-3. 安全测试
-4. 网络测试
-5. 存储测试
-6. 软件环境测试
-7. 硬件检测
+1. 系统信息收集 (category: system_info)
+2. 算力测试 (category: computing) - 包括INT,FP8,FP16,FP32,FP64测试
+3. 性能测试 (category: performance)
+4. 安全测试 (category: security)
+5. 网络测试 (category: network)
+6. 存储测试 (category: storage)
+7. 软件环境测试 (category: software)
+8. 硬件检测 (category: hardware)
 
 对于每个测试项目，请提供：
 - 测试名称和描述
@@ -154,7 +155,7 @@ class LLMClient:
             "id": "unique_id",
             "name": "测试名称",
             "description": "测试描述",
-            "category": "system_info|performance|security|network|storage|software|hardware",
+            "category": "system_info|computing|performance|security|network|storage|software|hardware",
             "command": "要执行的命令",
             "expected_output": "预期输出描述",
             "timeout": 30,
@@ -175,18 +176,29 @@ class LLMClient:
             data = json.loads(response)
             
             test_items = []
-            for item_data in data.get('test_items', []):
-                test_item = TestItem(
-                    id=item_data.get('id', f"test_{len(test_items)}"),
-                    name=item_data.get('name', ''),
-                    description=item_data.get('description', ''),
-                    category=item_data.get('category', 'custom'),
-                    command=item_data.get('command', ''),
-                    expected_output=item_data.get('expected_output'),
-                    timeout=item_data.get('timeout', 30),
-                    priority=item_data.get('priority', 1)
-                )
-                test_items.append(test_item)
+            for i, item_data in enumerate(data.get('test_items', [])):
+                try:
+                    # 验证类别是否有效
+                    category = item_data.get('category', 'custom')
+                    if category not in [cat.value for cat in TestCategory]:
+                        print(f"[LLM] Warning: Invalid category '{category}' for test item {i}, using 'custom' instead")
+                        category = 'custom'
+                    
+                    test_item = TestItem(
+                        id=item_data.get('id', f"test_{len(test_items)}"),
+                        name=item_data.get('name', ''),
+                        description=item_data.get('description', ''),
+                        category=category,
+                        command=item_data.get('command', ''),
+                        expected_output=item_data.get('expected_output'),
+                        timeout=item_data.get('timeout', 30),
+                        priority=item_data.get('priority', 1)
+                    )
+                    test_items.append(test_item)
+                except Exception as e:
+                    print(f"[LLM] Error parsing test item {i}: {str(e)}")
+                    print(f"[LLM] Test item data: {item_data}")
+                    continue
             
             test_plan = TestPlan(
                 id=f"plan_{datetime.now().strftime('%Y%m%d_%H%M%S')}",

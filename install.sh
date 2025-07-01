@@ -4,9 +4,9 @@
 
 echo "🔧 开始安装 SysScope AI..."
 
-# 检查Python环境
+# 检查Python3
 if ! command -v python3 &> /dev/null; then
-    echo "❌ Python3 未安装，请先安装Python3"
+    echo "❌ 未检测到Python3，请先安装Python3。"
     exit 1
 fi
 
@@ -14,6 +14,30 @@ fi
 if ! command -v node &> /dev/null; then
     echo "❌ Node.js 未安装，请先安装Node.js"
     exit 1
+fi
+
+# 检查并安装sysbench
+echo "🔧 检查sysbench工具..."
+if ! command -v sysbench &> /dev/null; then
+    echo "📦 sysbench未安装，正在安装..."
+    if command -v brew &> /dev/null; then
+        echo "🍺 使用Homebrew安装sysbench..."
+        brew install sysbench
+    elif command -v apt-get &> /dev/null; then
+        echo "📦 使用apt-get安装sysbench..."
+        sudo apt-get update
+        sudo apt-get install -y sysbench
+    elif command -v yum &> /dev/null; then
+        echo "📦 使用yum安装sysbench..."
+        sudo yum install -y sysbench
+    else
+        echo "⚠️  无法自动安装sysbench，请手动安装："
+        echo "   macOS: brew install sysbench"
+        echo "   Ubuntu/Debian: sudo apt-get install sysbench"
+        echo "   CentOS/RHEL: sudo yum install sysbench"
+    fi
+else
+    echo "✅ sysbench已安装"
 fi
 
 # 创建必要的目录
@@ -31,15 +55,44 @@ if [ ! -d "venv" ]; then
 fi
 
 # 激活虚拟环境
+echo "🔧 激活虚拟环境..."
 source venv/bin/activate
 
 # 升级pip
 echo "⬆️  升级pip..."
-pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple/
+pip install --upgrade pip
 
-# 安装依赖（使用国内镜像源）
-echo "📦 安装Python依赖（使用清华镜像源加速）..."
-pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
+# 安装后端依赖
+if [ -f "requirements.txt" ]; then
+    echo "📦 安装后端依赖..."
+    pip install -r requirements.txt
+else
+    echo "❌ 未找到requirements.txt"
+    exit 1
+fi
+
+# 检查关键依赖是否安装
+echo "🔍 检查关键依赖..."
+pip show fastapi &> /dev/null
+if [ $? -ne 0 ]; then
+    echo "❌ fastapi未安装，依赖安装失败。"
+    exit 1
+fi
+
+pip show numpy &> /dev/null
+if [ $? -ne 0 ]; then
+    echo "❌ numpy未安装，算力测试将失败。"
+    exit 1
+fi
+
+pip show torch &> /dev/null
+if [ $? -ne 0 ]; then
+    echo "❌ torch未安装，算力测试将失败。"
+    exit 1
+fi
+
+echo "✅ 所有依赖安装完成！"
+echo "🚀 现在可以运行 ./start.sh 启动服务"
 
 cd ..
 

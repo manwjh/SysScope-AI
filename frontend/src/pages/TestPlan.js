@@ -19,17 +19,33 @@ import {
   ClockCircleOutlined 
 } from '@ant-design/icons';
 import { generateTestPlan, executeTests } from '../utils/api';
+import axios from 'axios';
 
 const TestPlan = () => {
   const [testPlan, setTestPlan] = useState(null);
   const [loading, setLoading] = useState(false);
   const [executing, setExecuting] = useState(false);
   const [results, setResults] = useState(null);
+  const [testProgress, setTestProgress] = useState([]);
 
   useEffect(() => {
     console.log('TestPlan component mounted');
     console.log('Current testPlan state:', testPlan);
-  }, [testPlan]);
+    // 定时轮询测试进度
+    const timer = setInterval(() => {
+      fetchTestProgress();
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const fetchTestProgress = async () => {
+    try {
+      const res = await axios.get('/api/test/progress');
+      setTestProgress(res.data);
+    } catch (e) {
+      // 忽略错误
+    }
+  };
 
   const handleGeneratePlan = async () => {
     try {
@@ -97,6 +113,27 @@ const TestPlan = () => {
     };
     return colors[category] || 'default';
   };
+
+  const statusMap = {
+    pending: { color: 'default', text: '等待中' },
+    running: { color: 'processing', text: '进行中' },
+    completed: { color: 'success', text: '成功' },
+    failed: { color: 'error', text: '失败' },
+    skipped: { color: 'warning', text: '跳过' },
+  };
+
+  const testColumns = [
+    { title: '测试名称', dataIndex: 'name', key: 'name' },
+    { title: '状态', dataIndex: 'status', key: 'status',
+      render: status => <Tag color={statusMap[status]?.color}>{statusMap[status]?.text || status}</Tag>
+    },
+    { title: '进度', dataIndex: 'progress', key: 'progress',
+      render: progress => <Progress percent={progress} size="small" />
+    },
+    { title: '结果', dataIndex: 'result', key: 'result',
+      render: result => result ? <Tag color="green">{result}</Tag> : '-'
+    },
+  ];
 
   const columns = [
     {
@@ -183,6 +220,15 @@ const TestPlan = () => {
 
   return (
     <div>
+      <Card title="测试进度与结果" style={{ marginBottom: 24 }}>
+        <Table
+          columns={testColumns}
+          dataSource={testProgress}
+          rowKey="name"
+          pagination={false}
+          size="small"
+        />
+      </Card>
       <Card title="测试计划管理" extra={
         <Space>
           <Button 

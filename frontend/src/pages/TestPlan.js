@@ -56,6 +56,7 @@ const TestPlan = () => {
     try {
       setExecuting(true);
       const result = await executeTests(testPlan);
+      console.log('Test execution result:', result);
       setResults(result);
       message.success('测试执行完成！');
     } catch (error) {
@@ -156,7 +157,18 @@ const TestPlan = () => {
       width: 100,
       render: (_, record) => {
         if (!results) return '-';
-        const result = results.test_results.find(r => r.test_item_id === record.id);
+        
+        // Handle different possible data structures
+        let testResultsArray = null;
+        if (results.test_results && Array.isArray(results.test_results.test_results)) {
+          testResultsArray = results.test_results.test_results;
+        } else if (Array.isArray(results.test_results)) {
+          testResultsArray = results.test_results;
+        }
+        
+        if (!testResultsArray) return '-';
+        
+        const result = testResultsArray.find(r => r.test_item_id === record.id);
         return result ? (
           <Space>
             {getStatusIcon(result.status)}
@@ -218,15 +230,15 @@ const TestPlan = () => {
               <Card title="执行结果" style={{ marginBottom: 16 }}>
                 <Space size="large">
                   <div>
-                    <div>总测试数: {results.total_tests}</div>
-                    <div>通过: {results.passed_tests} ✅</div>
-                    <div>失败: {results.failed_tests} ❌</div>
-                    <div>跳过: {results.skipped_tests} ⏭️</div>
+                    <div>总测试数: {results.test_results?.total_tests || 0}</div>
+                    <div>通过: {results.test_results?.passed_tests || 0} ✅</div>
+                    <div>失败: {results.test_results?.failed_tests || 0} ❌</div>
+                    <div>跳过: {results.test_results?.skipped_tests || 0} ⏭️</div>
                   </div>
                   <div>
                     <Progress
                       type="circle"
-                      percent={results.total_tests > 0 ? (results.passed_tests / results.total_tests) * 100 : 0}
+                      percent={results.test_results?.total_tests > 0 ? (results.test_results.passed_tests / results.test_results.total_tests) * 100 : 0}
                       format={percent => `${percent.toFixed(1)}%`}
                     />
                   </div>

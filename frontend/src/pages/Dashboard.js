@@ -79,16 +79,7 @@ const Dashboard = () => {
     <div>
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="系统概览" extra={
-            <Button 
-              type="primary" 
-              icon={<ExperimentOutlined />}
-              loading={generating}
-              onClick={handleGenerateTestPlan}
-            >
-              生成测试计划
-            </Button>
-          }>
+          <Card title="系统概览">
             <Row gutter={[16, 16]}>
               <Col span={6}>
                 <Statistic
@@ -168,17 +159,6 @@ const Dashboard = () => {
         <Col span={24}>
           <Card title="快速操作">
             <Row gutter={[16, 16]}>
-              <Col span={6}>
-                <Button 
-                  type="primary" 
-                  icon={<ExperimentOutlined />}
-                  block
-                  onClick={handleGenerateTestPlan}
-                  loading={generating}
-                >
-                  生成测试计划
-                </Button>
-              </Col>
               <Col span={6}>
                 <Button 
                   icon={<FileTextOutlined />}
